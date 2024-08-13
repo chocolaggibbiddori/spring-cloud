@@ -6,9 +6,9 @@ spring:
     name: user-service
 
 eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
-    instance:
-      instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     register-with-eureka: true
     fetch-registry: true
     service-url:
