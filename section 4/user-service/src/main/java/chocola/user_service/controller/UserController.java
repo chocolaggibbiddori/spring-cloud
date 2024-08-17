@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -21,6 +22,7 @@ public class UserController {
 
     private final UserService userService;
     private final Environment env;
+    private final ModelMapper mapper = new ModelMapper();
 
     @Value("${greeting.message}")
     private String greetingMessage;
@@ -35,10 +37,9 @@ public class UserController {
         return this.greetingMessage;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/users")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseUser createUser(@RequestBody RequestUser user) {
-        ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
         UserDto userDto = mapper.map(user, UserDto.class);
@@ -46,6 +47,21 @@ public class UserController {
 
         userService.createUser(userDto);
 
+        return mapper.map(userDto, ResponseUser.class);
+    }
+
+    @GetMapping("/users")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ResponseUser> getUsers() {
+        return userService.getAllUser().stream()
+                .map(ue -> mapper.map(ue, ResponseUser.class))
+                .toList();
+    }
+
+    @GetMapping("/users/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseUser getUser(@PathVariable("userId") String userId) {
+        UserDto userDto = userService.getUserByUserId(userId);
         return mapper.map(userDto, ResponseUser.class);
     }
 }
