@@ -4,6 +4,8 @@ import chocola.user_service.dto.UserDto;
 import chocola.user_service.service.UserService;
 import chocola.user_service.vo.RequestLogin;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +18,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Objects;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -47,5 +52,24 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
         String email = ((User) authResult.getPrincipal()).getUsername();
         UserDto userDto = userService.getUserByEmail(email);
+
+        String token = Jwts.builder()
+                .subject(userDto.getUserId())
+                .expiration(getExpirationDate())
+                .signWith(getKey())
+                .compact();
+
+        response.addHeader("token", token);
+        response.addHeader("userId", userDto.getUserId());
+    }
+
+    private Date getExpirationDate() {
+        String exp = Objects.requireNonNull(env.getProperty("token.expiration_time"));
+        return new Date(System.currentTimeMillis() + Long.parseLong(exp));
+    }
+
+    private Key getKey() {
+        String secretKey = Objects.requireNonNull(env.getProperty("token.secret"));
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 }
