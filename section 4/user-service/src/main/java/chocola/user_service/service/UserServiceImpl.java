@@ -48,6 +48,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto getUserByEmail(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email).orElseThrow();
+        return mapper.map(userEntity, UserDto.class);
+    }
+
+    @Override
     public List<UserEntity> getAllUser() {
         return userRepository.findAll();
     }
