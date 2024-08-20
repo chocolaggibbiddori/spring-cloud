@@ -75,5 +75,12 @@ spring:
           predicates:
             - Path=/order-service/**
 
-token:
-  secret: asdfajk3rvba3984v6ba3wil4vbaw309va7w3bv98aonvaksfvlnai2384v7b326947ov6abw80tva6bf8v7ab3i4uvbsfvljhsdakfvahb374v6ab23784v6ab2380vb6asdfiuasbv
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - refresh
+          - health
+          - beans
+          - httpexchanges
