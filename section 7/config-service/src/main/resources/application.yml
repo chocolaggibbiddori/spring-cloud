@@ -14,3 +14,14 @@ spring:
         git:
 #          uri: file:///Users/kangdonghee/Desktop/study/inflearn/spring-cloud-git-repository
           uri: https://github.com/chocolaggibbiddori/spring-cloud-config
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, busrefresh
