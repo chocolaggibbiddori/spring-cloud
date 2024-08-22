@@ -5,7 +5,6 @@ import chocola.user_service.dto.UserDto;
 import chocola.user_service.entity.UserEntity;
 import chocola.user_service.repository.UserRepository;
 import chocola.user_service.vo.ResponseOrder;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -46,12 +45,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
         UserDto userDto = mapper.map(userEntity, UserDto.class);
 
-        List<ResponseOrder> orderList = null;
-        try {
-            orderList = orderServiceClient.getOrders(userId);
-        } catch (FeignException e) {
-            log.error(e.getMessage());
-        }
+        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
         userDto.setOrders(orderList);
 
         return userDto;

@@ -1,6 +1,8 @@
 package chocola.user_service;
 
+import chocola.user_service.error.FeignErrorDecoder;
 import feign.Logger;
+import feign.codec.ErrorDecoder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -26,5 +28,10 @@ public class UserServiceApplication {
     @Bean
     public Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
+    }
+
+    @Bean
+    public ErrorDecoder errorDecoder() {
+        return new FeignErrorDecoder();
     }
 }
