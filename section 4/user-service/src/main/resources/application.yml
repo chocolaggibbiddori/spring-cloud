@@ -49,3 +49,7 @@ management:
           - health
           - beans
           - busrefresh
+
+logging:
+  level:
+    chocola.user_service.client: DEBUG

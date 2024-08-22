@@ -10,6 +10,6 @@ import java.util.List;
 @FeignClient("order-service")
 public interface OrderServiceClient {
 
-    @GetMapping("/{userId}/orders")
+    @GetMapping("/{userId}/orders_wrong")
     List<ResponseOrder> getOrders(@PathVariable("userId") String userId);
 }
