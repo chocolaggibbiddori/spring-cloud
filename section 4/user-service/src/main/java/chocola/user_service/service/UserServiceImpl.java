@@ -1,5 +1,6 @@
 package chocola.user_service.service;
 
+import chocola.user_service.client.OrderServiceClient;
 import chocola.user_service.dto.UserDto;
 import chocola.user_service.entity.UserEntity;
 import chocola.user_service.repository.UserRepository;
@@ -7,21 +8,15 @@ import chocola.user_service.vo.ResponseOrder;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,8 +25,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
-    private final Environment env;
+    private final OrderServiceClient orderServiceClient;
     private final ModelMapper mapper = new ModelMapper();
 
     @Override
@@ -49,14 +43,7 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
         UserDto userDto = mapper.map(userEntity, UserDto.class);
 
-        String orderServiceUrl = Objects.requireNonNull(env.getProperty("order_service.url")).formatted(userDto.getUserId());
-
-        ResponseEntity<List<ResponseOrder>> responseEntity =
-                restTemplate.exchange(
-                        orderServiceUrl, HttpMethod.GET, null,
-                        new ParameterizedTypeReference<>() {
-                        });
-        List<ResponseOrder> orderList = responseEntity.getBody();
+        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
         userDto.setOrders(orderList);
 
         return userDto;
