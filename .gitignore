@@ -9,3 +9,4 @@
 ### My Ignore ###
 **/target/
 *.jks
+kafka/
