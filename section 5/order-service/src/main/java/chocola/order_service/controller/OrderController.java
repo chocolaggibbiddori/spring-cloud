@@ -2,6 +2,7 @@ package chocola.order_service.controller;
 
 import chocola.order_service.dto.OrderDto;
 import chocola.order_service.messagequeue.KafkaProducer;
+import chocola.order_service.messagequeue.OrderProducer;
 import chocola.order_service.service.OrderService;
 import chocola.order_service.vo.RequestOrder;
 import chocola.order_service.vo.ResponseOrder;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class OrderController {
 
     private final OrderService orderService;
     private final KafkaProducer kafkaProducer;
+    private final OrderProducer orderProducer;
     private final ModelMapper mapper;
 
     @GetMapping("/health_check")
@@ -31,11 +34,13 @@ public class OrderController {
     public ResponseOrder createOrder(@RequestBody RequestOrder order, @PathVariable("userId") String userId) {
         OrderDto orderDto = mapper.map(order, OrderDto.class);
         orderDto.setUserId(userId);
+        orderDto.setOrderId(UUID.randomUUID().toString());
+        orderDto.setTotalPrice(order.getQuantity() * order.getUnitPrice());
 
-        OrderDto createdOrderDto = orderService.createOrder(orderDto);
         kafkaProducer.send("catalog-topic", orderDto);
+        orderProducer.send("orders", orderDto);
 
-        return mapper.map(createdOrderDto, ResponseOrder.class);
+        return mapper.map(orderDto, ResponseOrder.class);
     }
 
     @GetMapping("/{userId}/orders")
