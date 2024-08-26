@@ -6,20 +6,20 @@ import lombok.Data;
 @Data
 public class Payload {
 
-    private String orderId;
-    private String userId;
-    private String productId;
+    private String order_id;
+    private String user_id;
+    private String product_id;
     private int quantity;
-    private int unitPrice;
-    private int totalPrice;
+    private int unit_price;
+    private int total_price;
 
     @Builder
     public Payload(String orderId, String userId, String productId, int quantity, int unitPrice, int totalPrice) {
-        this.orderId = orderId;
-        this.userId = userId;
-        this.productId = productId;
+        this.order_id = orderId;
+        this.user_id = userId;
+        this.product_id = productId;
         this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.totalPrice = totalPrice;
+        this.unit_price = unitPrice;
+        this.total_price = totalPrice;
     }
 }
