@@ -1,6 +1,7 @@
 package chocola.order_service.controller;
 
 import chocola.order_service.dto.OrderDto;
+import chocola.order_service.messagequeue.KafkaProducer;
 import chocola.order_service.service.OrderService;
 import chocola.order_service.vo.RequestOrder;
 import chocola.order_service.vo.ResponseOrder;
@@ -17,6 +18,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final KafkaProducer kafkaProducer;
     private final ModelMapper mapper;
 
     @GetMapping("/health_check")
@@ -31,6 +33,8 @@ public class OrderController {
         orderDto.setUserId(userId);
 
         OrderDto createdOrderDto = orderService.createOrder(orderDto);
+        kafkaProducer.send("catalog-topic", orderDto);
+
         return mapper.map(createdOrderDto, ResponseOrder.class);
     }
 
