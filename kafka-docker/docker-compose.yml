@@ -1,0 +1,36 @@
+name: spring-cloud
+
+services:
+  kafka:
+    image: didrkd684/inflearn-spring-cloud-kafka
+    container_name: kafka
+    stdin_open: true
+    tty: true
+    ports:
+      - "9092:9092"
+      - "8083:8083"
+#    volumes:
+#      - spring-cloud-kafka-data:/tmp/kafka-logs 볼륨을 지정하게 되면 kafka 서버 재시작 시 에러!
+    networks:
+      - spring-cloud-network
+
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    volumes:
+      - spring-cloud-mariadb-data:/var/lib/mysql #MariaDB 데이터 저장소
+    environment:
+      - MARIADB_ROOT_PASSWORD=1234
+    networks:
+      - spring-cloud-network
+
+networks:
+  spring-cloud-network:
+    driver: bridge
+    name: spring-cloud-network
+
+volumes:
+  spring-cloud-mariadb-data:
+    name: spring-cloud-mariadb-data
