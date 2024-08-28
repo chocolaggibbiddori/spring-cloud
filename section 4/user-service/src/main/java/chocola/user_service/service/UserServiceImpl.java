@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.cloud.circuitbreaker.resilience4j.Resilience4JCircuitBreakerFactory;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrderServiceClient orderServiceClient;
+    private final Resilience4JCircuitBreakerFactory circuitBreakerFactory;
     private final ModelMapper mapper = new ModelMapper();
 
     @Override
@@ -45,7 +48,11 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findByUserId(userId).orElseThrow();
         UserDto userDto = mapper.map(userEntity, UserDto.class);
 
-        List<ResponseOrder> orderList = orderServiceClient.getOrders(userId);
+        CircuitBreaker circuitbreaker = circuitBreakerFactory.create("circuitbreaker");
+        List<ResponseOrder> orderList = circuitbreaker.run(
+                () -> orderServiceClient.getOrders(userId),
+                throwable -> new ArrayList<>());
+
         userDto.setOrders(orderList);
 
         return userDto;
