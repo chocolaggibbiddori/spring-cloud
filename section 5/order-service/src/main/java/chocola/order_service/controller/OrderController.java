@@ -8,6 +8,7 @@ import chocola.order_service.vo.RequestOrder;
 import chocola.order_service.vo.ResponseOrder;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class OrderController {
@@ -32,21 +34,28 @@ public class OrderController {
     @PostMapping("/{userId}/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseOrder createOrder(@RequestBody RequestOrder order, @PathVariable("userId") String userId) {
+        log.info("Before add orders data");
         OrderDto orderDto = mapper.map(order, OrderDto.class);
         orderDto.setUserId(userId);
         orderDto.setOrderId(UUID.randomUUID().toString());
         orderDto.setTotalPrice(order.getQuantity() * order.getUnitPrice());
 
-        kafkaProducer.send("catalog-topic", orderDto);
-        orderProducer.send("orders", orderDto);
+        OrderDto createdOrderDto = orderService.createOrder(orderDto);
+//        kafkaProducer.send("catalog-topic", orderDto);
+//        orderProducer.send("orders", orderDto);
 
-        return mapper.map(orderDto, ResponseOrder.class);
+        log.info("After added orders data");
+        return mapper.map(createdOrderDto, ResponseOrder.class);
     }
 
     @GetMapping("/{userId}/orders")
     public List<ResponseOrder> getOrders(@PathVariable("userId") String userId) {
-        return orderService.getOrdersByUserId(userId).stream()
+        log.info("Before retrieve orders data");
+        List<ResponseOrder> responseOrderList = orderService.getOrdersByUserId(userId).stream()
                 .map(entity -> mapper.map(entity, ResponseOrder.class))
                 .toList();
+        log.info("After retrieved orders data");
+
+        return responseOrderList;
     }
 }
