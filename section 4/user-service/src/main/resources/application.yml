@@ -58,6 +58,9 @@ management:
           - health
           - beans
           - busrefresh
+          - info
+          - metrics
+          - prometheus
 
 logging:
   level:

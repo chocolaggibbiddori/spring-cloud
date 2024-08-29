@@ -4,6 +4,7 @@ import chocola.user_service.dto.UserDto;
 import chocola.user_service.service.UserService;
 import chocola.user_service.vo.RequestUser;
 import chocola.user_service.vo.ResponseUser;
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -26,6 +27,7 @@ public class UserController {
     @Value("${greeting.message}")
     private String greetingMessage;
 
+    @Timed(value = "users.status", longTask = true)
     @GetMapping("/health_check")
     public String status() {
         return """
@@ -39,6 +41,7 @@ public class UserController {
                 env.getProperty("token.secret"), env.getProperty("token.expiration_time"));
     }
 
+    @Timed(value = "users.welcome", longTask = true)
     @GetMapping("/welcome")
     public String welcome() {
         return this.greetingMessage;

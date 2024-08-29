@@ -93,3 +93,6 @@ management:
           - beans
           - httpexchanges
           - busrefresh
+          - info
+          - metrics
+          - prometheus
