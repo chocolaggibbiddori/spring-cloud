@@ -44,3 +44,17 @@ services:
       - "8761:8761"
     networks:
       ecommerce-network:
+
+  apigateway-service:
+    build: section 2/apigateway-service
+    image: didrkd684/apigateway-service:1.0
+    container_name: apigateway-service
+    depends_on:
+      - config-service
+      - eureka-service
+    ports:
+      - "8000:8000"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+    networks:
+      ecommerce-network:
