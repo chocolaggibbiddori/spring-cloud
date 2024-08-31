@@ -1,0 +1,35 @@
+name: spring-cloud
+
+networks:
+  ecommerce-network:
+    name: spring-cloud-network
+    driver: bridge
+
+services:
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    ports:
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "15671:15671"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      ecommerce-network:
+
+  config-service:
+    build: section 7/config-service
+    image: didrkd684/config-service:1.0
+    container_name: config-service
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+    networks:
+      ecommerce-network:
