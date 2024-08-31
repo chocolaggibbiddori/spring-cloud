@@ -33,3 +33,14 @@ services:
       SPRING_RABBITMQ_HOST: rabbitmq
     networks:
       ecommerce-network:
+
+  eureka-service:
+    build: section 1/discoveryservice
+    image: didrkd684/eureka-service:1.0
+    container_name: eureka-service
+    depends_on:
+      - config-service
+    ports:
+      - "8761:8761"
+    networks:
+      ecommerce-network:
