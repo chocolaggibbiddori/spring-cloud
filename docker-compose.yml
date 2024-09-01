@@ -5,6 +5,11 @@ networks:
     name: spring-cloud-network
     driver: bridge
 
+volumes:
+  maria-data:
+    name: maria-data
+    external: true
+
 services:
   rabbitmq:
     image: rabbitmq:management-alpine
@@ -58,3 +63,13 @@ services:
       SPRING_RABBITMQ_HOST: rabbitmq
     networks:
       ecommerce-network:
+
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    ports:
+      - "3306:3306"
+    networks:
+      ecommerce-network:
+    volumes:
+      - maria-data:/var/lib/mysql
