@@ -101,3 +101,11 @@ services:
     networks:
       ecommerce-network:
         ipv4_address: 172.18.0.101
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      ecommerce-network:
