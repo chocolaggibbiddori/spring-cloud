@@ -109,3 +109,21 @@ services:
       - "9411:9411"
     networks:
       ecommerce-network:
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      ecommerce-network:
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      ecommerce-network:
