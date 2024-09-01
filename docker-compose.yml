@@ -4,6 +4,10 @@ networks:
   ecommerce-network:
     name: spring-cloud-network
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/16
+          gateway: 172.18.0.1
 
 volumes:
   maria-data:
@@ -73,3 +77,27 @@ services:
       ecommerce-network:
     volumes:
       - maria-data:/var/lib/mysql
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      ecommerce-network:
+        ipv4_address: 172.18.0.100
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_LISTENERS: PLAINTEXT://172.18.0.101:9092
+      KAFKA_CREATE_TOPICS: "test:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper
+    networks:
+      ecommerce-network:
+        ipv4_address: 172.18.0.101
