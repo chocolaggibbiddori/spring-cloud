@@ -139,3 +139,12 @@ services:
       - apigateway-service
     networks:
       ecommerce-network:
+
+  catalog-service:
+    build: section 5/catalog-service
+    image: didrkd684/catalog-service
+    container_name: catalog-service
+    depends_on:
+      - apigateway-service
+    networks:
+      ecommerce-network:
