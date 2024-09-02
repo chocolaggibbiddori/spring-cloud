@@ -9,6 +9,8 @@ RUN mvn package -DskipTests
 
 FROM openjdk:17.0.1-jdk-slim
 
+RUN apt-get update && apt-get install -y curl
+
 WORKDIR /app
 COPY apiEncryptionKey.jks .
 COPY --from=build /app/target/config-service-1.0.jar config-service-1.0.jar
