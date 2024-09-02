@@ -121,3 +121,12 @@ services:
       - "3000:3000"
     networks:
       ecommerce-network:
+
+  user-service:
+    build: section 4/user-service
+    image: didrkd684/user-service
+    container_name: user-service
+    depends_on:
+      - apigateway-service
+    networks:
+      ecommerce-network:
