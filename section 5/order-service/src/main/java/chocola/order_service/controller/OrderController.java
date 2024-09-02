@@ -41,7 +41,7 @@ public class OrderController {
         orderDto.setTotalPrice(order.getQuantity() * order.getUnitPrice());
 
         OrderDto createdOrderDto = orderService.createOrder(orderDto);
-//        kafkaProducer.send("catalog-topic", orderDto);
+        kafkaProducer.send("catalog-topic", orderDto);
 //        orderProducer.send("orders", orderDto);
 
         log.info("After added orders data");
@@ -49,6 +49,7 @@ public class OrderController {
     }
 
     @GetMapping("/{userId}/orders")
+    @ResponseStatus(HttpStatus.OK)
     public List<ResponseOrder> getOrders(@PathVariable("userId") String userId) {
         log.info("Before retrieve orders data");
         List<ResponseOrder> responseOrderList = orderService.getOrdersByUserId(userId).stream()

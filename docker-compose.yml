@@ -130,3 +130,12 @@ services:
       - apigateway-service
     networks:
       ecommerce-network:
+
+  order-service:
+    build: section 5/order-service
+    image: didrkd684/order-service
+    container_name: order-service
+    depends_on:
+      - apigateway-service
+    networks:
+      ecommerce-network:
