@@ -124,7 +124,7 @@ services:
 
   user-service:
     build: section 4/user-service
-    image: didrkd684/user-service
+    image: didrkd684/user-service:1.0
     container_name: user-service
     depends_on:
       - apigateway-service
@@ -133,7 +133,7 @@ services:
 
   order-service:
     build: section 5/order-service
-    image: didrkd684/order-service
+    image: didrkd684/order-service:1.0
     container_name: order-service
     depends_on:
       - apigateway-service
@@ -142,7 +142,7 @@ services:
 
   catalog-service:
     build: section 5/catalog-service
-    image: didrkd684/catalog-service
+    image: didrkd684/catalog-service:1.0
     container_name: catalog-service
     depends_on:
       - apigateway-service
