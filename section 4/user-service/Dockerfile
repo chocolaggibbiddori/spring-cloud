@@ -1,4 +1,4 @@
-FROM maven as build
+FROM maven AS build
 
 WORKDIR /app
 COPY pom.xml .
